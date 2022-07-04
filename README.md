@@ -6,7 +6,8 @@
 
 # Materials that can be usefull:
 
-Pygame Tutorial[https://www.youtube.com/watch?v=AY9MnQ4x3zk]
+[Pygame Tutorial from Mathias](https://www.youtube.com/watch?v=AY9MnQ4x3zk)
+[Pygame webpage](https://www.pygame.org/wiki/tutorials)
 
 # Tasks distribution:
 
