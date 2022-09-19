@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from math import ceil
 from sys import exit
@@ -14,20 +16,20 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = pygame.image.load('graphics/player/jump.png').convert_alpha()
 
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom=(SCREEN_WIDTH/10, 0))
+        self.rect = self.image.get_rect(midbottom=(SCREEN_WIDTH / 10, 0))
         self.gravity = 0
 
         self.jump_sound = pygame.mixer.Sound('audio/jump.mp3')
         self.jump_sound.set_volume(0.2)
-    
+
     def player_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.rect.bottom >= sky_height:
             self.gravity = -30  # jump
             self.jump_sound.play()
-        #if keys[pygame.K_RIGHT] and self.rect.right <= (SCREEN_WIDTH-50):
+        #  if keys[pygame.K_RIGHT] and self.rect.right <= (SCREEN_WIDTH-50):
         #    self.rect.x += 3
-        #if keys[pygame.K_LEFT] and self.rect.left >= 50:
+        #  if keys[pygame.K_LEFT] and self.rect.left >= 50:
         #    self.rect.x -= 3
 
     def apply_gravity(self):
@@ -44,7 +46,7 @@ class Player(pygame.sprite.Sprite):
             if self.player_index >= len(self.player_walk):
                 self.player_index = 0
             self.image = self.player_walk[int(self.player_index)]
-   
+
     def update(self):
         self.apply_gravity()
         self.player_input()
@@ -56,8 +58,8 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
 
         if type_of_nucleotide == 'A':
-            a_frame = pygame.image.load('graphics/nucleotides/A.png').convert_alpha()
-            self.frames = [a_frame]
+            a_frame_1 = pygame.image.load('graphics/nucleotides/A.png').convert_alpha()
+            self.frames = [a_frame_1]
             y_pos = sky_height
         elif type_of_nucleotide == 'T':
             t_frame_1 = pygame.image.load('graphics/nucleotides/T.png').convert_alpha()
@@ -75,7 +77,7 @@ class Obstacle(pygame.sprite.Sprite):
             n_frame_1 = pygame.image.load('graphics/nucleotides/N.png').convert_alpha()
             self.frames = [n_frame_1]
             y_pos = sky_height
-        
+
         self.animation_index = 0
         self.image = self.frames[self.animation_index]
         self.rect = self.image.get_rect(midbottom=(1490, y_pos))
@@ -94,9 +96,7 @@ class Obstacle(pygame.sprite.Sprite):
 def collision_sprite(k_mer_start):
     k_mer_start2 = k_mer_start
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, True):
-        print(nucleotides)
         sequence.append(nucleotides[-3])
-        print(sequence)
         obstacle_group.remove()
         k_mer_start2 = k_mer_start2 + 1
         return True, k_mer_start2
@@ -104,11 +104,11 @@ def collision_sprite(k_mer_start):
         score_seq = 0
         if len(sequence) == len(sequence_obj):
             for nucl in range(len(sequence_obj)):
-                if sequence_obj[nucl] == sequence[nucl]:
+                if sequence[nucl] == 'N':
+                    score_seq += 0.7
+                elif sequence_obj[nucl] == dictionary_nucleotides[sequence[nucl]]:
                     score_seq += 1
-                elif sequence[nucl] == 'N':
-                    score_seq += 0.5
-            result_of_sequencing = score_seq*100/len(sequence_obj)
+            result_of_sequencing = score_seq * 100 / len(sequence_obj)
             score = 1
             return False, result_of_sequencing
         return True, k_mer_start2
@@ -116,10 +116,20 @@ def collision_sprite(k_mer_start):
 
 def display_score():
     k_mer_start2 = collision_sprite(k_mer_start)[1]
-    k_mer = sequence_obj[k_mer_start2:k_mer_start2 + 3]
-    score_surf = k_mer_font.render(f'K-MER: {k_mer}', False, (64, 64, 64))
-    score_rect = score_surf.get_rect(center=(SCREEN_WIDTH/2, 100))
+    k_mer = sequence_obj[k_mer_start2]
+    score_surf = k_mer_font.render(f'Nucleotide:', False, (64, 64, 64))
+    score_rect = score_surf.get_rect(center=(SCREEN_WIDTH / 2, 100))
     screen.blit(score_surf, score_rect)
+
+    if k_mer == 'A':
+        KMER = pygame.image.load('graphics/nucleotides/A2.png').convert_alpha()
+    elif k_mer == 'T':
+        KMER = pygame.image.load('graphics/nucleotides/T2.png').convert_alpha()
+    elif k_mer == 'C':
+        KMER = pygame.image.load('graphics/nucleotides/C2.png').convert_alpha()
+    else:
+        KMER = pygame.image.load('graphics/nucleotides/G2.png').convert_alpha()
+    screen.blit(KMER,((SCREEN_WIDTH / 4)*3 - 10, 40))
     return k_mer
 
 
@@ -146,7 +156,7 @@ ground_surf = pygame.image.load('graphics/ground.png').convert()
 ground_width = ground_surf.get_width()
 
 scroll = 0
-tiles = ceil(SCREEN_WIDTH / ground_width)+1
+tiles = ceil(SCREEN_WIDTH / ground_width) + 1
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -156,24 +166,46 @@ obstacle_group = pygame.sprite.Group()
 # we don't want to add obstacles if the timer is not running so obstacle_group.add(Obstacle(...)) will be used after
 # Sequence count
 sequence = []
-sequence_obj = '''AGCTTAC'''
+sequence_dictionary = {
+    'Felis catus (Domestic cat)':
+        '''CTGGAGAAGGAGGGCAGGGCCAGAAGCCAAGTCTGAAGGAAGGAACTTCCAGCCAATGAAAGGGGAACTG''',
+    'Canis lupus familiaris (Dog - Labrador retriever)':
+        '''AATATAAGGGAATGGAGAAGAATTGTGTAGGAAATATCAGAAAGGGAGACAGAACATAAAGACTCCTAAC''',
+    'Elephas maximus (Asiatic elephant)':
+        '''ATGTGTTAAATGTGCCCTTTTCCTTCCACTCAAATACTGGTTAAAGCATGAATTCTAGGAAAGGAAGTTT''',
+    'Escherichia coli (Bacteria)':
+        '''GCATCGAATGGGCTCATCATTAATCGGTATCGGAATCAGGAGAATTTATAATGGCTTACAGCGAAAAAGT''',
+    'SARS-CoV-2 (Coronavirus)':
+        '''GAAGACATTCAACTTCTTAAGAGTGCTTATGAAAATTTTAATCAGCACGAAGTTCTACTTGCACCATTAT''',
+    'Cantharellus cibarius (chanterelle)':
+        '''AATGGCTTCTAGTCCGGCATGATCCACCCTATGAGCATCGGTGATCACAACAGAGTTGCTGGGGGCAGGT''',
+    'Salmo salar (Salmon)':
+        '''TATTTATTTTTATCCAAAAATCACAGCTGGAGTGCGATGGCGCCTTCCTGGGTGTCGGGTATGGTCGATG'''
+}
+organisms = sequence_dictionary.keys()
+sequence_organism = random.choice(list(sequence_dictionary.keys()))
+random_length_of_sequence = randint(15, 30)
+random_start = randint(0, 70 - random_length_of_sequence)
+sequence_obj = str(sequence_dictionary[sequence_organism][random_start:random_start + random_length_of_sequence])
+
+dictionary_nucleotides = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
+
 k_mer_start = 0
 # Intro screen
 player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
-player_stand_rect = player_stand.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+player_stand_rect = player_stand.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
 title_surf = test_font.render('Pyquencing Runner', False, (111, 196, 169))
-title_rect = title_surf.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/5))
+title_rect = title_surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5))
 
 caption_surf = test_font.render('Are you ready? Good luck and press space to start', False, (111, 196, 169))
-caption_rect = caption_surf.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.2))
+caption_rect = caption_surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2))
 
 # Timer
 obstacle_timer = pygame.USEREVENT + 1  # we add +1 to avoid conflict with other pygame events
-pygame.time.set_timer(obstacle_timer, 1500)
+pygame.time.set_timer(obstacle_timer, 1600)
 nucleotides = []
-
 
 while True:
     # event loop
@@ -190,7 +222,7 @@ while True:
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
-                start_time = int(pygame.time.get_ticks()/500)
+                start_time = int(pygame.time.get_ticks() / 500)
     # dislpay
     if game_active:
         # background
@@ -222,19 +254,25 @@ while True:
 
         result = 0
         result = round(collision_sprite(k_mer_start)[1])
+        statement2 = ''
         if result >= 99:
-            statement = 'You are an amazing sequenator!'
-        elif 99 > result > 90:
-            statement = 'You are good and relatively reliable sequenator.'
-        elif 50 < result < 80:
+            statement = 'You are an amazing sequencer!'
+            statement2 = f'You sequenced part of the genome {sequence_organism}'
+        elif 99 > result >= 70:
+            statement = 'You are good and relatively reliable sequencer.'
+            statement2 = f'You sequenced part of the genome {sequence_organism}'
+        elif 60 <= result < 70:
             statement = 'I am sure that you can do better. Try again ;)'
         else:
-            statement = 'Please try again, the sequencing did not go well, so we cannot say what organism you sequenced'
+            statement = 'Please try again, the sequencing did not go well,'
+            statement2 = 'so we cannot say what organism you sequenced'
 
-        score_message = test_font.render(f'Your sequencing result is {result}', False, (111, 196, 169))
-        score_message_rect = score_message.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.2))
+        score_message = test_font.render(f'Your sequencing result is {result} %', False, (111, 196, 169))
+        score_message_rect = score_message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2))
         score_message2 = test_font.render(f'{statement}', False, (111, 196, 169))
-        score_message_rect2 = score_message.get_rect(center=(SCREEN_WIDTH/5, SCREEN_HEIGHT / 1.2 + 30))
+        score_message3 = test_font.render(f'{statement2}', False, (111, 196, 169))
+        score_message_rect2 = score_message.get_rect(center=(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.2 + 30))
+        score_message_rect3 = score_message.get_rect(center=(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 1.2 + 60))
         screen.blit(title_surf, title_rect)
 
         if result == 0:
@@ -242,7 +280,7 @@ while True:
         else:
             screen.blit(score_message, score_message_rect)
             screen.blit(score_message2, score_message_rect2)
-
+            screen.blit(score_message3, score_message_rect3)
 
     pygame.display.update()
     clock.tick(60)
