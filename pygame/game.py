@@ -148,10 +148,10 @@ def display_complement(collidedNucleotide):
         screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 100 - 20))
     elif collidedNucleotide == 'G':
         collidedNucleotideGraphic = pygame.image.load('graphics/nucleotides/G2.png')
-        screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 50))
+        screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 60))
     elif collidedNucleotide == 'C':
         collidedNucleotideGraphic = pygame.image.load('graphics/nucleotides/C.png')
-        screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 50))
+        screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 60))
     elif collidedNucleotide == 'N':
         collidedNucleotideGraphic = pygame.image.load('graphics/nucleotides/N.png')
         screen.blit(collidedNucleotideGraphic, ((SCREEN_WIDTH / 4) * 3 - 10, 40 + 100 - 20))
@@ -315,7 +315,7 @@ while True:
             statement = 'You are an amazing sequencer!'
             statement2 = f'You sequenced part of the genome {sequence_organism}'
         elif 99 > result >= 70:
-            statement = 'You are good and relatively reliable sequencer.'
+            statement = 'You are a good and relatively reliable sequencer.'
             statement2 = f'You sequenced part of the genome {sequence_organism}'
         elif 60 <= result < 70:
             statement = 'I am sure that you can do better. Try again ;)'
@@ -328,7 +328,7 @@ while True:
         score_message2 = test_font.render(f'{statement}', False, (111, 196, 169))
         score_message3 = test_font.render(f'{statement2}', False, (111, 196, 169))
         score_message_rect2 = score_message.get_rect(center=(SCREEN_WIDTH / 3 + 150, SCREEN_HEIGHT / 1.2 + 30))
-        score_message_rect3 = score_message.get_rect(center=(SCREEN_WIDTH / 3 + 150, SCREEN_HEIGHT / 1.2 + 60))
+        score_message_rect3 = score_message.get_rect(center=(SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 1.2 + 60))
         screen.blit(title_surf, title_rect)
 
         if result == 0:
