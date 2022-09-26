@@ -117,7 +117,7 @@ def collision_sprite(k_mer_start):
         if len(sequence) == len(sequence_obj):
             for nucl in range(len(sequence_obj)):
                 if sequence[nucl] == 'N':
-                    score_seq += 0.7
+                    score_seq += 0.5
                 elif sequence_obj[nucl] == dictionary_nucleotides[sequence[nucl]]:
                     score_seq += 1
             result_of_sequencing = score_seq * 100 / len(sequence_obj)
