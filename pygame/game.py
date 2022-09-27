@@ -163,6 +163,8 @@ def display_complement(collidedNucleotide):
         myk_mer = sequence_obj[myk_mer_start2]
         if dictionary_nucleotides[myk_mer] == collidedNucleotide:
             winSound()
+        elif collidedNucleotide == 'N':
+            pass
         else:
             loseSound()
 
@@ -222,20 +224,30 @@ obstacle_group = pygame.sprite.Group()
 # Sequence count
 sequence = []
 sequence_dictionary = {
-    'Felis catus (Domestic cat)':
+    'Felis catus (Tamkatt)':
         '''CTGGAGAAGGAGGGCAGGGCCAGAAGCCAAGTCTGAAGGAAGGAACTTCCAGCCAATGAAAGGGGAACTG''',
-    'Canis lupus familiaris (Dog - Labrador retriever)':
+    'Canis lupus familiaris (Hund - Labrador retriever)':
         '''AATATAAGGGAATGGAGAAGAATTGTGTAGGAAATATCAGAAAGGGAGACAGAACATAAAGACTCCTAAC''',
-    'Elephas maximus (Asiatic elephant)':
+    'Elephas maximus (Asiatisk elefant)':
         '''ATGTGTTAAATGTGCCCTTTTCCTTCCACTCAAATACTGGTTAAAGCATGAATTCTAGGAAAGGAAGTTT''',
-    'Escherichia coli (Bacteria)':
+    'Escherichia coli (Kolibakterie)':
         '''GCATCGAATGGGCTCATCATTAATCGGTATCGGAATCAGGAGAATTTATAATGGCTTACAGCGAAAAAGT''',
     'SARS-CoV-2 (Coronavirus)':
         '''GAAGACATTCAACTTCTTAAGAGTGCTTATGAAAATTTTAATCAGCACGAAGTTCTACTTGCACCATTAT''',
-    'Cantharellus cibarius (chanterelle)':
+    'Cantharellus cibarius (Kantarell)':
         '''AATGGCTTCTAGTCCGGCATGATCCACCCTATGAGCATCGGTGATCACAACAGAGTTGCTGGGGGCAGGT''',
-    'Salmo salar (Salmon)':
-        '''TATTTATTTTTATCCAAAAATCACAGCTGGAGTGCGATGGCGCCTTCCTGGGTGTCGGGTATGGTCGATG'''
+    'Salmo salar (Atlantlax)':
+        '''TATTTATTTTTATCCAAAAATCACAGCTGGAGTGCGATGGCGCCTTCCTGGGTGTCGGGTATGGTCGATG''',
+    'Rosa chinensis (Kinarosor)':
+        '''ATTAAGTTTCAAATGTCTTCTATGAACCTTATTACTTCATTGTTCAAGAAAATTGCGTTTGACTCCTGCT''',
+    'Vaccinium myrtillus (Blåbär)':
+        '''CTCTTTGAGTGTTGAGGACGATAGTGTCAATTTGGGCGCCAAGTATTGCGTTATTTATAGGGCTCCGTTC''',
+    'Boletus edulis (Karljohanssvamp)':
+        '''ATGTCATATATCAACTTTATATCTGTATTCTTGTAGCTGAAACTACCAAGCTAATGCTGTGGTGTGTTCA''',
+    'Alces alces (Älgar)':
+        '''TCCAGGTGAATGATGCTTTTGTCCTTGTCATCTACCACCACCATCGAAGAAGTGGTGGAAATGGGGTGGA''',
+
+
 }
 organisms = sequence_dictionary.keys()
 sequence_organism = random.choice(list(sequence_dictionary.keys()))
@@ -311,12 +323,15 @@ while True:
         result = 0
         result = round(collision_sprite(k_mer_start)[1])
         statement2 = ''
+        statement3 = ''
         if result >= 99:
             statement = 'You are an amazing sequencer!'
-            statement2 = f'You sequenced part of the genome {sequence_organism}'
+            statement2 = f'You sequenced part of the genome'
+            statement3 = f'{sequence_organism}'
         elif 99 > result >= 70:
             statement = 'You are a good and relatively reliable sequencer.'
-            statement2 = f'You sequenced part of the genome {sequence_organism}'
+            statement2 = f'You sequenced part of the genome'
+            statement3 = f'{sequence_organism}'
         elif 60 <= result < 70:
             statement = 'I am sure that you can do better. Try again ;)'
         else:
@@ -327,8 +342,10 @@ while True:
         score_message_rect = score_message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.2))
         score_message2 = test_font.render(f'{statement}', False, (111, 196, 169))
         score_message3 = test_font.render(f'{statement2}', False, (111, 196, 169))
+        score_message4 = test_font.render(f'{statement3}', False, (111, 196, 169))
         score_message_rect2 = score_message.get_rect(center=(SCREEN_WIDTH / 3 + 150, SCREEN_HEIGHT / 1.2 + 30))
         score_message_rect3 = score_message.get_rect(center=(SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 1.2 + 60))
+        score_message_rect4 = score_message.get_rect(center=(SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 1.2 + 90))
         screen.blit(title_surf, title_rect)
 
         if result == 0:
@@ -337,6 +354,7 @@ while True:
             screen.blit(score_message, score_message_rect)
             screen.blit(score_message2, score_message_rect2)
             screen.blit(score_message3, score_message_rect3)
+            screen.blit(score_message4, score_message_rect4)
 
     pygame.display.update()
     clock.tick(60)
